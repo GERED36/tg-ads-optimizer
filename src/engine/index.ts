@@ -113,7 +113,7 @@ export class Engine {
 
       // 4. Execute optimization action
       if (result.action === 'pause') {
-        const campaign = campaigns.find(c => c.id === m.campaignId);
+        const campaign = campaigns.find((c: any) => c.id === m.campaignId);
         if (campaign) {
           await this.telegramClient.updateCampaign(campaign.telegramCampaignId, { status: 'paused' });
           await prisma.campaign.update({
@@ -122,7 +122,7 @@ export class Engine {
           });
         }
       } else if (result.action === 'raise' || result.action === 'lower') {
-        const campaign = campaigns.find(c => c.id === m.campaignId);
+        const campaign = campaigns.find((c: any) => c.id === m.campaignId);
         if (campaign) {
           const newBudget = Math.max(100, Math.round(campaign.dailyBudget * (1 + result.budgetAdjustment)));
           await this.telegramClient.updateCampaign(campaign.telegramCampaignId, {
@@ -138,11 +138,11 @@ export class Engine {
 
     // 5. Reallocate budget across campaigns
     if (metrics.length > 1) {
-      const totalBudget = campaigns.reduce((sum, c) => sum + c.dailyBudget, 0);
+      const totalBudget = campaigns.reduce((sum: number, c: any) => sum + c.dailyBudget, 0);
       const allocation = reallocateBudget(metrics, totalBudget);
 
       for (const [campaignId, newBudget] of allocation) {
-        const campaign = campaigns.find(c => c.id === campaignId);
+        const campaign = campaigns.find((c: any) => c.id === campaignId);
         if (campaign && Math.abs(campaign.dailyBudget - newBudget) > 10) {
           const roundedBudget = Math.round(newBudget);
           await this.telegramClient.updateCampaign(campaign.telegramCampaignId, {

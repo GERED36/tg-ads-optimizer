@@ -79,7 +79,7 @@ export class Reporter {
       }
     }
 
-    const campaignRows = campaigns.map(c => {
+    const campaignRows = campaigns.map((c: any) => {
       const s = latestStats.get(c.id);
       return {
         id: c.id,
@@ -95,11 +95,11 @@ export class Reporter {
       };
     });
 
-    const totalSpend = campaignRows.reduce((s, c) => s + c.spend, 0);
-    const totalConversions = campaignRows.reduce((s, c) => s + c.conversions, 0);
-    const activeCount = campaignRows.filter(c => c.status === 'active').length;
+    const totalSpend = campaignRows.reduce((s: number, c: any) => s + c.spend, 0);
+    const totalConversions = campaignRows.reduce((s: number, c: any) => s + c.conversions, 0);
+    const activeCount = campaignRows.filter((c: any) => c.status === 'active').length;
 
-    const statsHistory = stats.slice(0, 100).reverse().map(s => ({
+    const statsHistory = stats.slice(0, 100).reverse().map((s: any) => ({
       timestamp: s.timestamp.toISOString(),
       cpc: s.cpc,
       cpm: s.cpm,
@@ -111,9 +111,9 @@ export class Reporter {
     return {
       overview: {
         totalSpend,
-        avgCpc: campaignRows.length > 0 ? campaignRows.reduce((s, c) => s + c.cpc, 0) / campaignRows.length : 0,
-        avgCpm: campaignRows.length > 0 ? campaignRows.reduce((s, c) => s + c.cpm, 0) / campaignRows.length : 0,
-        avgCpo: campaignRows.length > 0 ? campaignRows.reduce((s, c) => s + c.cpo, 0) / campaignRows.length : 0,
+        avgCpc: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: any) => s + c.cpc, 0) / campaignRows.length : 0,
+        avgCpm: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: any) => s + c.cpm, 0) / campaignRows.length : 0,
+        avgCpo: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: any) => s + c.cpo, 0) / campaignRows.length : 0,
         totalConversions,
         activeCampaigns: activeCount,
       },
