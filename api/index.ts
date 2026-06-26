@@ -2,10 +2,14 @@ import express from 'express'
 import cors from 'cors'
 import prisma from '../src/db'
 import { login, register, verify } from '../src/auth'
+import { ensureTables } from '../src/db/migrate'
 
 const app = express()
 app.use(cors({ origin: '*' }))
 app.use(express.json())
+
+// Auto-migrate on startup
+ensureTables()
 
 // --- Auth ---
 

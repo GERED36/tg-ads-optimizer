@@ -3,8 +3,10 @@ import { createTelegramClient } from './api/telegram';
 import { Engine } from './engine';
 import { Reporter } from './reporter';
 import { createServer } from './server';
+import { ensureTables } from './db/migrate';
 
 async function main() {
+  await ensureTables();
   const config = getConfig();
 
   const reporter = new Reporter();

@@ -16,6 +16,7 @@ if (url) {
     optimizationLog: { create: (a: any) => Promise.resolve(a.data), findMany: () => emptyArr },
     budgetHistory: { create: (a: any) => Promise.resolve(a.data) },
     $disconnect: () => Promise.resolve(),
+    $executeRawUnsafe: () => Promise.resolve([]),
   }
 }
 

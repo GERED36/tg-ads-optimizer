@@ -9,8 +9,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "postinstall": "npx prisma generate --schema=src/db/prisma/schema.prisma",
+    "db:push": "npx prisma db push --schema=src/db/prisma/schema.prisma --accept-data-loss",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev"
   },
   "dependencies": {

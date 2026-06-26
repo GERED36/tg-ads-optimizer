@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd dashboard && npm run build",
+  "buildCommand": "npm run db:push && cd dashboard && npm run build",
   "outputDirectory": "dashboard/dist",
   "installCommand": "npm install && cd dashboard && npm install",
   "rewrites": [
