@@ -10,56 +10,85 @@ if (!url || !authToken) {
 
 const client = createClient({ url, authToken })
 
-const sql = `
-CREATE TABLE IF NOT EXISTS Campaign (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'active',
-  dailyBudget REAL NOT NULL DEFAULT 0,
-  telegramCampaignId TEXT,
-  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+const dropTables = `
+DROP TABLE IF EXISTS BudgetHistory;
+DROP TABLE IF EXISTS OptimizationLog;
+DROP TABLE IF EXISTS CampaignStat;
+DROP TABLE IF EXISTS Campaign;
+`
+
+const createTables = `
+CREATE TABLE "Campaign" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "telegramCampaignId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "dailyBudget" REAL NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "cpcTarget" REAL NOT NULL DEFAULT 0.5,
+    "cpoTarget" REAL NOT NULL DEFAULT 10.0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
 );
-CREATE TABLE IF NOT EXISTS CampaignStat (
-  id TEXT PRIMARY KEY,
-  campaignId TEXT NOT NULL,
-  timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  impressions INTEGER NOT NULL DEFAULT 0,
-  clicks INTEGER NOT NULL DEFAULT 0,
-  spend REAL NOT NULL DEFAULT 0,
-  conversions INTEGER NOT NULL DEFAULT 0,
-  conversionsExternal INTEGER NOT NULL DEFAULT 0,
-  cpc REAL NOT NULL DEFAULT 0,
-  ctr REAL NOT NULL DEFAULT 0,
-  cpm REAL NOT NULL DEFAULT 0,
-  cpo REAL NOT NULL DEFAULT 0,
-  FOREIGN KEY (campaignId) REFERENCES Campaign(id) ON DELETE CASCADE
+
+CREATE UNIQUE INDEX "Campaign_telegramCampaignId_key" ON "Campaign"("telegramCampaignId");
+
+CREATE TABLE "CampaignStat" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "campaignId" TEXT NOT NULL,
+    "timestamp" DATETIME NOT NULL,
+    "impressions" INTEGER NOT NULL,
+    "clicks" INTEGER NOT NULL,
+    "spend" REAL NOT NULL,
+    "cpc" REAL NOT NULL,
+    "ctr" REAL NOT NULL,
+    "cpm" REAL NOT NULL,
+    "conversions" INTEGER NOT NULL DEFAULT 0,
+    "conversionsExternal" INTEGER NOT NULL DEFAULT 0,
+    "cpo" REAL NOT NULL,
+    FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS OptimizationLog (
-  id TEXT PRIMARY KEY,
-  campaignId TEXT NOT NULL,
-  action TEXT NOT NULL,
-  reason TEXT NOT NULL,
-  timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  oldBudget REAL,
-  newBudget REAL,
-  FOREIGN KEY (campaignId) REFERENCES Campaign(id) ON DELETE CASCADE
+
+CREATE INDEX "CampaignStat_campaignId_timestamp_idx" ON "CampaignStat"("campaignId", "timestamp");
+CREATE INDEX "CampaignStat_campaignId_idx" ON "CampaignStat"("campaignId");
+
+CREATE TABLE "OptimizationLog" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "campaignId" TEXT NOT NULL,
+    "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "action" TEXT NOT NULL,
+    "reason" TEXT NOT NULL,
+    "oldBudget" REAL,
+    "newBudget" REAL,
+    "oldBid" REAL,
+    "newBid" REAL,
+    FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS BudgetHistory (
-  id TEXT PRIMARY KEY,
-  campaignId TEXT NOT NULL,
-  timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  oldBudget REAL NOT NULL,
-  newBudget REAL NOT NULL,
-  reason TEXT,
-  FOREIGN KEY (campaignId) REFERENCES Campaign(id) ON DELETE CASCADE
+
+CREATE INDEX "OptimizationLog_campaignId_timestamp_idx" ON "OptimizationLog"("campaignId", "timestamp");
+
+CREATE TABLE "BudgetHistory" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "campaignId" TEXT NOT NULL,
+    "date" DATETIME NOT NULL,
+    "budgetAllocated" REAL NOT NULL,
+    "budgetSpent" REAL NOT NULL,
+    FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE
 );
+
+CREATE UNIQUE INDEX "BudgetHistory_campaignId_date_key" ON "BudgetHistory"("campaignId", "date");
 `
 
 try {
-  await client.executeMultiple(sql)
+  console.log('Dropping existing tables...')
+  await client.executeMultiple(dropTables)
+
+  console.log('Creating tables...')
+  await client.executeMultiple(createTables)
+
   const result = await client.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
-  console.log('Tables created:', result.rows.map(r => r.name).join(', '))
+  console.log('Tables:', result.rows.map(r => r.name).join(', '))
+
+  console.log('Schema pushed successfully!')
 } catch (e) {
   console.error('Error:', e.message)
   process.exit(1)
