@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Campaign {
+  id                 String   @id @default(uuid())
+  telegramCampaignId String   @unique
+  name               String
+  dailyBudget        Float
+  status             String   @default("active")
+  cpcTarget          Float    @default(0.5)
+  cpoTarget          Float    @default(10.0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  stats         CampaignStat[]
+  optimizations OptimizationLog[]
+  budgetHistory BudgetHistory[]
+}
+
+model CampaignStat {
+  id                  String   @id @default(uuid())
+  campaignId          String
+  timestamp           DateTime
+  impressions         Int
+  clicks              Int
+  spend               Float
+  cpc                 Float
+  ctr                 Float
+  cpm                 Float
+  conversions         Int      @default(0)
+  conversionsExternal Int      @default(0)
+  cpo                 Float
+
+  campaign Campaign @relation(fields: [campaignId], references: [id])
+
+  @@index([campaignId, timestamp])
+  @@index([campaignId])
+}
+
+model OptimizationLog {
+  id         String   @id @default(uuid())
+  campaignId String
+  timestamp  DateTime @default(now())
+  action     String
+  reason     String
+  oldBudget  Float?
+  newBudget  Float?
+  oldBid     Float?
+  newBid     Float?
+
+  campaign Campaign @relation(fields: [campaignId], references: [id])
+
+  @@index([campaignId, timestamp])
+}
+
+model BudgetHistory {
+  id              String   @id @default(uuid())
+  campaignId      String
+  date            DateTime
+  budgetAllocated Float
+  budgetSpent     Float
+
+  campaign Campaign @relation(fields: [campaignId], references: [id])
+
+  @@unique([campaignId, date])
+}
