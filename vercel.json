@@ -3,7 +3,8 @@
   "outputDirectory": "dashboard/dist",
   "installCommand": "npm install && cd dashboard && npm install",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/index.ts": {
