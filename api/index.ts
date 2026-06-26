@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import type { Campaign, CampaignStat } from '@prisma/client';
 import prisma from '../src/db';
 
 const app = express();
@@ -9,20 +8,20 @@ app.use(express.json());
 
 app.get('/api/metrics', async (_req, res) => {
   try {
-    const campaigns = await prisma.campaign.findMany();
-    const stats = await prisma.campaignStat.findMany({
+    const campaigns: any[] = await prisma.campaign.findMany();
+    const stats: any[] = await prisma.campaignStat.findMany({
       orderBy: { timestamp: 'desc' },
       take: 200,
     });
 
-    const latestStats = new Map<string, typeof stats[0]>();
+    const latestStats = new Map<string, any>();
     for (const s of stats) {
       if (!latestStats.has(s.campaignId)) {
         latestStats.set(s.campaignId, s);
       }
     }
 
-    const campaignRows = campaigns.map((c: Campaign) => {
+    const campaignRows = campaigns.map(c => {
       const s = latestStats.get(c.id);
       return {
         id: c.id, name: c.name, status: c.status, dailyBudget: c.dailyBudget,
@@ -32,11 +31,11 @@ app.get('/api/metrics', async (_req, res) => {
       };
     });
 
-    const totalSpend = campaignRows.reduce((s: number, c: { spend: number }) => s + c.spend, 0);
-    const totalConversions = campaignRows.reduce((s: number, c: { conversions: number }) => s + c.conversions, 0);
-    const activeCount = campaignRows.filter((c: { status: string }) => c.status === 'active').length;
+    const totalSpend = campaignRows.reduce((s: number, c: any) => s + c.spend, 0);
+    const totalConversions = campaignRows.reduce((s: number, c: any) => s + c.conversions, 0);
+    const activeCount = campaignRows.filter((c: any) => c.status === 'active').length;
 
-    const statsHistory = stats.slice(0, 100).reverse().map((s: CampaignStat) => ({
+    const statsHistory = stats.slice(0, 100).reverse().map((s: any) => ({
       timestamp: s.timestamp.toISOString(),
       cpc: s.cpc, cpm: s.cpm, ctr: s.ctr, spend: s.spend,
       conversions: s.conversions + s.conversionsExternal,
@@ -45,9 +44,9 @@ app.get('/api/metrics', async (_req, res) => {
     res.json({
       overview: {
         totalSpend,
-        avgCpc: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: { cpc: number }) => s + c.cpc, 0) / campaignRows.length : 0,
-        avgCpm: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: { cpm: number }) => s + c.cpm, 0) / campaignRows.length : 0,
-        avgCpo: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: { cpo: number }) => s + c.cpo, 0) / campaignRows.length : 0,
+        avgCpc: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: any) => s + c.cpc, 0) / campaignRows.length : 0,
+        avgCpm: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: any) => s + c.cpm, 0) / campaignRows.length : 0,
+        avgCpo: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: any) => s + c.cpo, 0) / campaignRows.length : 0,
         totalConversions,
         activeCampaigns: activeCount,
       },
@@ -61,20 +60,20 @@ app.get('/api/metrics', async (_req, res) => {
 
 app.get('/api/campaigns', async (_req, res) => {
   try {
-    const campaigns = await prisma.campaign.findMany();
-    const stats = await prisma.campaignStat.findMany({
+    const campaigns: any[] = await prisma.campaign.findMany();
+    const stats: any[] = await prisma.campaignStat.findMany({
       orderBy: { timestamp: 'desc' },
       take: 200,
     });
 
-    const latestStats = new Map<string, typeof stats[0]>();
+    const latestStats = new Map<string, any>();
     for (const s of stats) {
       if (!latestStats.has(s.campaignId)) {
         latestStats.set(s.campaignId, s);
       }
     }
 
-    const rows = campaigns.map((c: Campaign) => {
+    const rows = campaigns.map(c => {
       const s = latestStats.get(c.id);
       return {
         id: c.id, name: c.name, status: c.status, dailyBudget: c.dailyBudget,
