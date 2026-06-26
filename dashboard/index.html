@@ -9,48 +9,61 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-primary: #0f0f11;
-      --bg-card: #1a1a1e;
-      --bg-elevated: #252529;
-      --border: #2a2a2e;
-      --text-primary: #e1e1e6;
-      --text-secondary: #888;
-      --text-muted: #666;
-      --accent-primary: #6c8cff;
-      --accent-secondary: #4caf50;
+      --bg-primary: #070707;
+      --bg-card: #111111;
+      --bg-elevated: #1a1a1a;
+      --border: rgba(255,255,255,.08);
+      --text-primary: #FFFFFF;
+      --text-secondary: #9CA3AF;
+      --text-muted: #6B7280;
+      --accent-primary: #22C55E;
+      --accent-secondary: #06B6D4;
+      --accent-glow: 0 0 24px rgba(34,197,94,.25);
       --radius-sm: 8px;
       --radius: 12px;
       --radius-lg: 16px;
-      --shadow: 0 2px 8px rgba(0,0,0,.3);
-      --shadow-lg: 0 4px 16px rgba(0,0,0,.4);
+      --shadow: 0 2px 8px rgba(0,0,0,.5);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.6);
       --font: 'Inter', system-ui, -apple-system, sans-serif;
-      --transition: .2s ease;
+      --transition: .2s cubic-bezier(.4,0,.2,1);
+      --glass-bg: rgba(17,17,17,.8);
+      --glass-border: rgba(255,255,255,.08);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,.4);
     }
-    [data-theme="blue-purple"] { --accent-primary: #5b7dff; --accent-secondary: #9c27b0; }
-    [data-theme="green-orange"] { --accent-primary: #4caf50; --accent-secondary: #ff9800; }
-    [data-theme="rose-amber"] { --accent-primary: #e91e63; --accent-secondary: #ffc107; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: var(--font);
       background: var(--bg-primary);
       color: var(--text-primary);
-      line-height: 1.5;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+    ::selection { background: rgba(34,197,94,.3); }
     @keyframes pulse {
-      0%, 100% { opacity: .4; }
-      50% { opacity: .7; }
+      0%, 100% { opacity: .3; }
+      50% { opacity: .6; }
     }
     .skeleton {
       background: var(--bg-elevated);
       border-radius: var(--radius-sm);
-      animation: pulse 1.5s infinite;
+      animation: pulse 1.5s ease-in-out infinite;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .fade-in { animation: fadeIn .3s ease; }
+    .fade-in { animation: fadeIn .4s ease; }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .shimmer {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+      animation: shimmer 2s infinite;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
