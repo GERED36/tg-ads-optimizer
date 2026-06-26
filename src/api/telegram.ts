@@ -20,7 +20,7 @@ export function createTelegramClient(config: { TELEGRAM_ADS_API_BASE_URL: string
       throw new Error(`Telegram API error ${response.status}: ${errorBody}`);
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
   }
 
   return {
