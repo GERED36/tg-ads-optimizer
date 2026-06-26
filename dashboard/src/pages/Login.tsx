@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { login } from '../api/client'
+import GlowButton from '../components/GlowButton'
 
 interface LoginProps {
   onLogin: () => void
@@ -28,12 +30,26 @@ export default function Login({ onLogin }: LoginProps) {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--bg-primary)',
+      background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden',
     }}>
       <div style={{
-        background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-        padding: 40, border: '1px solid var(--border)', width: 380, maxWidth: '90%',
-      }}>
+        position: 'absolute', top: '20%', left: '30%',
+        width: 400, height: 400, borderRadius: '50%',
+        background: 'rgba(34,197,94,.06)', filter: 'blur(100px)',
+      }} />
+      <motion.div
+        initial={{ opacity: 0, scale: .97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: .4 }}
+        style={{
+          background: 'rgba(17,17,17,.8)', backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--glass-border)',
+          padding: 40, width: 380, maxWidth: '90%',
+          position: 'relative',
+        }}
+      >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Маркетинговый агент</h1>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Войдите в панель управления</p>
@@ -52,34 +68,31 @@ export default function Login({ onLogin }: LoginProps) {
               autoFocus
               style={{
                 width: '100%', padding: '10px 14px', fontSize: 14,
-                background: 'var(--bg-primary)', border: '1px solid var(--border)',
+                background: 'var(--bg-primary)', border: '1px solid var(--glass-border)',
                 color: 'var(--text-primary)', borderRadius: 'var(--radius-sm)',
                 outline: 'none', boxSizing: 'border-box',
+                transition: 'border-color var(--transition)',
               }}
+              onFocus={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,.2)'}
+              onBlur={e => e.currentTarget.style.borderColor = ''}
             />
           </div>
 
           {error && (
-            <div style={{ color: '#ff6b6b', fontSize: 13, marginBottom: 16, textAlign: 'center' }}>
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ color: '#ef4444', fontSize: 13, marginBottom: 16, textAlign: 'center' }}
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
-          <button type="submit" disabled={loading} style={{
-            width: '100%', padding: '10px 0', fontSize: 14, fontWeight: 600,
-            background: loading ? 'var(--accent-secondary)' : 'var(--accent-primary)',
-            color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)',
-            cursor: loading ? 'default' : 'pointer', opacity: loading ? .7 : 1,
-            transition: 'opacity .15s',
-          }}>
+          <GlowButton disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
             {loading ? 'Вход...' : 'Войти'}
-          </button>
+          </GlowButton>
         </form>
-
-        <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', marginTop: 24 }}>
-          Пароль по умолчанию: admin
-        </p>
-      </div>
+      </motion.div>
     </div>
   )
 }
