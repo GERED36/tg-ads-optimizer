@@ -63,26 +63,26 @@ export function optimizeCampaign(
   const { output, clamped } = controller.compute(metrics.cpc);
 
   if (metrics.impressions > 1000 && metrics.ctr < (config.MIN_CTR_PERCENT / 100)) {
-    return { action: 'pause', reason: 'CTR too low', bidAdjustment: 0, budgetAdjustment: 0 };
+    return { action: 'pause', reason: 'CTR слишком низкий', bidAdjustment: 0, budgetAdjustment: 0 };
   }
 
   if (clamped && output < 0) {
     return {
       action: 'lower',
-      reason: `CPC ${metrics.cpc.toFixed(4)} significantly above target ${config.CPC_TARGET}`,
+      reason: `CPC ${metrics.cpc.toFixed(4)} значительно выше цели ${config.CPC_TARGET}`,
       bidAdjustment: output,
       budgetAdjustment: output * 0.5,
     };
   }
 
   if (Math.abs(output) < 0.01) {
-    return { action: 'none', reason: 'Within acceptable range', bidAdjustment: 0, budgetAdjustment: 0 };
+    return { action: 'none', reason: 'В пределах допустимого', bidAdjustment: 0, budgetAdjustment: 0 };
   }
 
   if (output > 0) {
     return {
       action: 'raise',
-      reason: `CPC ${metrics.cpc.toFixed(4)} below target ${config.CPC_TARGET}`,
+      reason: `CPC ${metrics.cpc.toFixed(4)} ниже цели ${config.CPC_TARGET}`,
       bidAdjustment: output,
       budgetAdjustment: output * 0.5,
     };
@@ -90,7 +90,7 @@ export function optimizeCampaign(
 
   return {
     action: 'lower',
-    reason: `CPC ${metrics.cpc.toFixed(4)} above target ${config.CPC_TARGET}`,
+    reason: `CPC ${metrics.cpc.toFixed(4)} выше цели ${config.CPC_TARGET}`,
     bidAdjustment: output,
     budgetAdjustment: output * 0.5,
   };

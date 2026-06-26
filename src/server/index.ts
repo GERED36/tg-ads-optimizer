@@ -18,7 +18,7 @@ export function createServer(config: Config, reporter: Reporter): http.Server {
       const data = await reporter.getDashboardData();
       res.json(data);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch metrics' });
+      res.status(500).json({ error: 'Ошибка загрузки метрик' });
     }
   });
 
@@ -27,7 +27,7 @@ export function createServer(config: Config, reporter: Reporter): http.Server {
       const data = await reporter.getDashboardData();
       res.json(data.campaigns);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch campaigns' });
+      res.status(500).json({ error: 'Ошибка загрузки кампаний' });
     }
   });
 
@@ -42,12 +42,12 @@ export function createServer(config: Config, reporter: Reporter): http.Server {
         },
       });
       if (!campaign) {
-        res.status(404).json({ error: 'Campaign not found' });
+        res.status(404).json({ error: 'Кампания не найдена' });
         return;
       }
       res.json(campaign);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch campaign' });
+      res.status(500).json({ error: 'Ошибка загрузки кампании' });
     }
   });
 

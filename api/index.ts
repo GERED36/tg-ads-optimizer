@@ -54,7 +54,7 @@ app.get('/api/metrics', async (_req, res) => {
       statsHistory,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch metrics' });
+    res.status(500).json({ error: 'Ошибка загрузки метрик' });
   }
 });
 
@@ -85,7 +85,7 @@ app.get('/api/campaigns', async (_req, res) => {
 
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch campaigns' });
+    res.status(500).json({ error: 'Ошибка загрузки кампаний' });
   }
 });
 
@@ -99,12 +99,12 @@ app.get('/api/campaigns/:id', async (req, res) => {
       },
     });
     if (!campaign) {
-      res.status(404).json({ error: 'Campaign not found' });
+      res.status(404).json({ error: 'Кампания не найдена' });
       return;
     }
     res.json(campaign);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch campaign' });
+    res.status(500).json({ error: 'Ошибка загрузки кампании' });
   }
 });
 

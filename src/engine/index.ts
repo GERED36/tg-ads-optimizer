@@ -79,7 +79,7 @@ export class Engine {
     }
 
     if (metrics.length === 0) {
-      console.log('No campaigns with sufficient data');
+      console.log('Нет кампаний с достаточными данными');
       return;
     }
 
@@ -157,7 +157,7 @@ export class Engine {
             data: {
               campaignId,
               action: 'reallocate',
-              reason: `Budget redistributed from ${campaign.dailyBudget} to ${roundedBudget}`,
+              reason: `Бюджет перераспределён с ${campaign.dailyBudget} на ${roundedBudget}`,
               oldBudget: campaign.dailyBudget,
               newBudget: roundedBudget,
             },

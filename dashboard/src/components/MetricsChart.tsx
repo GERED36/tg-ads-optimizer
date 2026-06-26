@@ -1,37 +1,58 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 interface MetricsChartProps {
-  data: Array<{ timestamp: string } & Record<string, number>>;
-  lines: Array<{ key: string; color: string; name: string }>;
+  data: Array<{ timestamp: string } & Record<string, number>>
+  lines: Array<{ key: string; color: string; name: string }>
 }
 
 export default function MetricsChart({ data, lines }: MetricsChartProps) {
   if (data.length === 0) {
-    return <div style={{ color: '#666', textAlign: 'center', padding: 40 }}>No data yet</div>;
+    return <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 40 }}>Нет данных</div>
   }
 
   return (
-    <div style={{ background: '#1a1a1e', borderRadius: 12, padding: 20, border: '1px solid #2a2a2e' }}>
+    <div style={{
+      background: 'var(--bg-card)', borderRadius: 'var(--radius)',
+      padding: 20, border: '1px solid var(--border)',
+    }}>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2e" />
+        <AreaChart data={data}>
+          <defs>
+            {lines.map(line => (
+              <linearGradient key={line.key} id={`gradient-${line.key}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={line.color} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={line.color} stopOpacity={0} />
+              </linearGradient>
+            ))}
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="timestamp"
-            stroke="#666"
-            tickFormatter={(v: string) => new Date(v).toLocaleTimeString()}
+            stroke="var(--text-muted)"
+            tickFormatter={(v: string) => {
+              const d = new Date(v)
+              return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
+            }}
             fontSize={11}
           />
-          <YAxis stroke="#666" fontSize={11} />
+          <YAxis stroke="var(--text-muted)" fontSize={11} />
           <Tooltip
-            contentStyle={{ background: '#1a1a1e', border: '1px solid #2a2a2e', borderRadius: 8 }}
-            labelStyle={{ color: '#888' }}
+            contentStyle={{
+              background: 'var(--bg-card)', border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)', fontSize: 13,
+            }}
+            labelFormatter={(v: string) => new Date(v).toLocaleString('ru')}
           />
-          <Legend />
+          <Legend formatter={(value: string) => <span style={{ color: 'var(--text-primary)', fontSize: 13 }}>{value}</span>} />
           {lines.map(line => (
-            <Line key={line.key} type="monotone" dataKey={line.key} stroke={line.color} name={line.name} dot={false} strokeWidth={2} />
+            <Area
+              key={line.key} type="monotone" dataKey={line.key}
+              stroke={line.color} fill={`url(#gradient-${line.key})`}
+              name={line.name} dot={false} strokeWidth={2}
+            />
           ))}
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
