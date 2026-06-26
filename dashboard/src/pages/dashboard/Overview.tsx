@@ -1,7 +1,7 @@
+import { motion } from 'framer-motion'
 import { useDashboard, useWebSocketUpdates } from '../../hooks/useMetrics'
 import KPICard from '../../components/KPICard'
 import MetricsChart from '../../components/MetricsChart'
-import CampaignsTable from '../../components/CampaignsTable'
 
 export default function Overview() {
   const { data, isLoading } = useDashboard()
@@ -10,22 +10,25 @@ export default function Overview() {
 
   if (isLoading && !data) {
     return (
-      <div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
           {Array.from({ length: 6 }).map((_, i) => <KPICard key={i} label="" value="" loading />)}
         </div>
         <div className="skeleton" style={{ height: 300, borderRadius: 'var(--radius)', marginBottom: 24 }} />
-        <div className="skeleton" style={{ height: 200, borderRadius: 'var(--radius)' }} />
-      </div>
+      </motion.div>
     )
   }
 
-  if (!displayData) return <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 40 }}>Нет данных</div>
+  if (!displayData) return (
+    <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 60 }}>
+      Нет данных
+    </div>
+  )
 
   const { overview, campaigns, statsHistory } = displayData
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .3 }}>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <KPICard label="Общий расход" value={`${overview.totalSpend.toFixed(2)} ₽`} subtitle="За всё время" />
         <KPICard label="Средний CPC" value={`${overview.avgCpc.toFixed(4)} ₽`} subtitle="Цена за клик" />
@@ -36,21 +39,18 @@ export default function Overview() {
       </div>
 
       <div style={{ marginBottom: 24 }}>
-        <h3 style={{ marginBottom: 12, fontSize: 16, fontWeight: 600 }}>История метрик</h3>
+        <h3 style={{ marginBottom: 12, fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
+          История метрик
+        </h3>
         <MetricsChart
           data={statsHistory as unknown as Array<{ timestamp: string } & Record<string, number>>}
           lines={[
-            { key: 'cpc', color: 'var(--accent-secondary)', name: 'CPC' },
-            { key: 'cpm', color: '#ff9800', name: 'CPM' },
-            { key: 'ctr', color: 'var(--accent-primary)', name: 'CTR' },
+            { key: 'cpc', color: '#22C55E', name: 'CPC' },
+            { key: 'cpm', color: '#06B6D4', name: 'CPM' },
+            { key: 'ctr', color: '#f59e0b', name: 'CTR' },
           ]}
         />
       </div>
-
-      <div>
-        <h3 style={{ marginBottom: 12, fontSize: 16, fontWeight: 600 }}>Кампании</h3>
-        <CampaignsTable campaigns={campaigns} onSelect={() => {}} />
-      </div>
-    </div>
+    </motion.div>
   )
 }
