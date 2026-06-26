@@ -5,8 +5,7 @@ Automated Telegram Ads optimization agent with PID controller and real-time dash
 ## Quick Start
 
 ```bash
-# 1. Clone and install
-git clone <repo-url> marketing-agent
+# 1. Install
 cd marketing-agent
 npm install
 
@@ -14,13 +13,10 @@ npm install
 cp .env.example .env
 # Edit .env with your Telegram Ads API token
 
-# 3. Start infrastructure
-docker compose up -d postgres redis
-
-# 4. Push database schema
+# 3. Push database schema (creates SQLite file)
 npx prisma db push
 
-# 5. Start agent
+# 4. Start agent
 npm run dev
 ```
 

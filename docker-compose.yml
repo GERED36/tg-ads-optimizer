@@ -1,40 +1,13 @@
 version: "3.8"
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: marketing_agent
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
   agent:
     build: .
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
     env_file: .env
     ports:
       - "3001:3001"
-    environment:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/marketing_agent?schema=public"
-      REDIS_URL: "redis://redis:6379"
+    volumes:
+      - sqlite_data:/app/prisma
     restart: unless-stopped
 
   dashboard:
@@ -48,4 +21,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  sqlite_data:

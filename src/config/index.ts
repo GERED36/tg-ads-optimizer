@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'fs';
 
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  REDIS_URL: z.string().url(),
+  DATABASE_URL: z.string().min(1),
+  REDIS_URL: z.string().default(''),
   TELEGRAM_ADS_API_TOKEN: z.string().min(1),
   TELEGRAM_ADS_API_BASE_URL: z.string().url().default('https://api.telegram.org/ads/v1'),
   OPTIMIZATION_INTERVAL_MS: z.coerce.number().positive().default(900000),

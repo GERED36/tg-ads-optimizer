@@ -3,13 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Campaign {
-  id                 String   @id @default(uuid())
+  id                 String   @id @default(cuid())
   telegramCampaignId String   @unique
   name               String
   dailyBudget        Float
@@ -25,7 +24,7 @@ model Campaign {
 }
 
 model CampaignStat {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(cuid())
   campaignId          String
   timestamp           DateTime
   impressions         Int
@@ -45,7 +44,7 @@ model CampaignStat {
 }
 
 model OptimizationLog {
-  id         String   @id @default(uuid())
+  id         String   @id @default(cuid())
   campaignId String
   timestamp  DateTime @default(now())
   action     String
@@ -61,7 +60,7 @@ model OptimizationLog {
 }
 
 model BudgetHistory {
-  id              String   @id @default(uuid())
+  id              String   @id @default(cuid())
   campaignId      String
   date            DateTime
   budgetAllocated Float
