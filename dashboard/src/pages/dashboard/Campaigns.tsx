@@ -1,5 +1,5 @@
-import { useDashboard } from '../hooks/useMetrics'
-import CampaignsTable from '../components/CampaignsTable'
+import { useDashboard } from '../../hooks/useMetrics'
+import CampaignsTable from '../../components/CampaignsTable'
 
 interface CampaignsProps {
   onSelect: (id: string) => void

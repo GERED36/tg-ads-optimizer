@@ -1,7 +1,7 @@
-import { useDashboard, useWebSocketUpdates } from '../hooks/useMetrics'
-import KPICard from '../components/KPICard'
-import MetricsChart from '../components/MetricsChart'
-import CampaignsTable from '../components/CampaignsTable'
+import { useDashboard, useWebSocketUpdates } from '../../hooks/useMetrics'
+import KPICard from '../../components/KPICard'
+import MetricsChart from '../../components/MetricsChart'
+import CampaignsTable from '../../components/CampaignsTable'
 
 export default function Overview() {
   const { data, isLoading } = useDashboard()

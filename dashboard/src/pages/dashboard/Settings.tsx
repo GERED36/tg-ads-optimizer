@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useTheme } from '../App'
-import { fetchSettings, saveSetting, testTelegramConnection } from '../api/client'
+import { useTheme } from '../../App'
+import { fetchSettings, saveSetting, testTelegramConnection } from '../../api/client'
 
 const themePresets = [
   { id: 'indigo-green', name: 'Индиго + Зелёный', primary: '#6c8cff', secondary: '#4caf50' },

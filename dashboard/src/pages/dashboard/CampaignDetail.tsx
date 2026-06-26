@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchCampaignDetail, CampaignDetail as CampaignDetailType } from '../api/client'
-import MetricsChart from '../components/MetricsChart'
+import { fetchCampaignDetail, CampaignDetail as CampaignDetailType } from '../../api/client'
+import MetricsChart from '../../components/MetricsChart'
 
 interface CampaignDetailProps {
   campaignId: string
