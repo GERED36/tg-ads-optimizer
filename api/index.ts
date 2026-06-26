@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import type { Campaign, CampaignStat } from '@prisma/client';
 import prisma from '../src/db';
 
 const app = express();
@@ -21,7 +22,7 @@ app.get('/api/metrics', async (_req, res) => {
       }
     }
 
-    const campaignRows = campaigns.map(c => {
+    const campaignRows = campaigns.map((c: Campaign) => {
       const s = latestStats.get(c.id);
       return {
         id: c.id, name: c.name, status: c.status, dailyBudget: c.dailyBudget,
@@ -31,11 +32,11 @@ app.get('/api/metrics', async (_req, res) => {
       };
     });
 
-    const totalSpend = campaignRows.reduce((s, c) => s + c.spend, 0);
-    const totalConversions = campaignRows.reduce((s, c) => s + c.conversions, 0);
-    const activeCount = campaignRows.filter(c => c.status === 'active').length;
+    const totalSpend = campaignRows.reduce((s: number, c: { spend: number }) => s + c.spend, 0);
+    const totalConversions = campaignRows.reduce((s: number, c: { conversions: number }) => s + c.conversions, 0);
+    const activeCount = campaignRows.filter((c: { status: string }) => c.status === 'active').length;
 
-    const statsHistory = stats.slice(0, 100).reverse().map(s => ({
+    const statsHistory = stats.slice(0, 100).reverse().map((s: CampaignStat) => ({
       timestamp: s.timestamp.toISOString(),
       cpc: s.cpc, cpm: s.cpm, ctr: s.ctr, spend: s.spend,
       conversions: s.conversions + s.conversionsExternal,
@@ -44,9 +45,9 @@ app.get('/api/metrics', async (_req, res) => {
     res.json({
       overview: {
         totalSpend,
-        avgCpc: campaignRows.length > 0 ? campaignRows.reduce((s, c) => s + c.cpc, 0) / campaignRows.length : 0,
-        avgCpm: campaignRows.length > 0 ? campaignRows.reduce((s, c) => s + c.cpm, 0) / campaignRows.length : 0,
-        avgCpo: campaignRows.length > 0 ? campaignRows.reduce((s, c) => s + c.cpo, 0) / campaignRows.length : 0,
+        avgCpc: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: { cpc: number }) => s + c.cpc, 0) / campaignRows.length : 0,
+        avgCpm: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: { cpm: number }) => s + c.cpm, 0) / campaignRows.length : 0,
+        avgCpo: campaignRows.length > 0 ? campaignRows.reduce((s: number, c: { cpo: number }) => s + c.cpo, 0) / campaignRows.length : 0,
         totalConversions,
         activeCampaigns: activeCount,
       },
@@ -73,7 +74,7 @@ app.get('/api/campaigns', async (_req, res) => {
       }
     }
 
-    const rows = campaigns.map(c => {
+    const rows = campaigns.map((c: Campaign) => {
       const s = latestStats.get(c.id);
       return {
         id: c.id, name: c.name, status: c.status, dailyBudget: c.dailyBudget,
