@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { CampaignRow } from '../api/client'
 
 interface CampaignsTableProps {
@@ -13,41 +14,45 @@ const statusLabels: Record<string, string> = {
 
 export default function CampaignsTable({ campaigns, onSelect }: CampaignsTableProps) {
   const cellStyle: React.CSSProperties = {
-    padding: '12px 16px', fontSize: 13, borderBottom: '1px solid var(--border)',
+    padding: '12px 16px', fontSize: 13, borderBottom: '1px solid var(--glass-border)',
   }
 
   return (
     <div style={{
-      background: 'var(--bg-card)', borderRadius: 'var(--radius)',
-      border: '1px solid var(--border)', overflow: 'auto', maxHeight: 600,
+      background: 'var(--glass-bg)', backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderRadius: 'var(--radius)',
+      border: '1px solid var(--glass-border)',
+      overflow: 'auto', maxHeight: 600,
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ position: 'sticky', top: 0, background: 'var(--bg-card)', zIndex: 1 }}>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>Название</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>Статус</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>Бюджет</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>CPC</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>CPO</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>CTR</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>Расход</th>
-            <th style={{ textAlign: 'left', padding: '12px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)', textTransform: 'uppercase' }}>Конверсии</th>
+            {['Название', 'Статус', 'Бюджет', 'CPC', 'CPO', 'CTR', 'Расход', 'Конверсии'].map(h => (
+              <th key={h} style={{
+                textAlign: 'left', padding: '12px 16px', fontSize: 11, color: 'var(--text-muted)',
+                borderBottom: '1px solid var(--glass-border)', fontWeight: 600, letterSpacing: '.5px',
+              }}>{h}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {campaigns.map(c => (
-            <tr key={c.id}
-              style={{ cursor: 'pointer', transition: 'background .15s' }}
+          {campaigns.map((c, i) => (
+            <motion.tr
+              key={c.id}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * .02 }}
+              style={{ cursor: 'pointer', transition: 'all var(--transition)' }}
               onClick={() => onSelect(c.id)}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
-              onMouseLeave={e => e.currentTarget.style.background = ''}
+              whileHover={{ scale: 1.01, background: 'rgba(255,255,255,.03)', boxShadow: '0 0 20px rgba(34,197,94,.08)' }}
             >
               <td style={{ ...cellStyle, color: 'var(--text-primary)', fontWeight: 500 }}>{c.name}</td>
               <td style={cellStyle}>
                 <span style={{
                   display: 'inline-block', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600,
-                  background: c.status === 'active' ? 'rgba(76,175,80,.15)' : 'var(--bg-elevated)',
-                  color: c.status === 'active' ? '#4caf50' : 'var(--text-secondary)',
+                  background: c.status === 'active' ? 'rgba(34,197,94,.15)' : 'rgba(255,255,255,.05)',
+                  color: c.status === 'active' ? '#22C55E' : 'var(--text-secondary)',
                 }}>
                   {statusLabels[c.status] || c.status}
                 </span>
@@ -58,7 +63,7 @@ export default function CampaignsTable({ campaigns, onSelect }: CampaignsTablePr
               <td style={cellStyle}>{(c.ctr * 100).toFixed(2)}%</td>
               <td style={cellStyle}>{c.spend.toFixed(2)} ₽</td>
               <td style={cellStyle}>{c.conversions}</td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>
