@@ -69,3 +69,8 @@ model BudgetHistory {
 
   @@unique([campaignId, date])
 }
+
+model AppSetting {
+  key   String @id
+  value String
+}

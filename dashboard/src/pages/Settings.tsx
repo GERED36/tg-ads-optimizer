@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTheme } from '../App'
+import { fetchSettings, saveSetting, testTelegramConnection } from '../api/client'
 
 const themePresets = [
   { id: 'indigo-green', name: 'Индиго + Зелёный', primary: '#6c8cff', secondary: '#4caf50' },
@@ -13,6 +14,35 @@ export default function Settings() {
   const [customPrimary, setCustomPrimary] = useState(primary)
   const [customSecondary, setCustomSecondary] = useState(secondary)
   const [saved, setSaved] = useState(false)
+
+  const [tgToken, setTgToken] = useState('')
+  const [tgBaseUrl, setTgBaseUrl] = useState('https://api.telegram.org/ads/v1')
+  const [tgStatus, setTgStatus] = useState<'idle' | 'testing' | 'ok' | 'error'>('idle')
+  const [tgMessage, setTgMessage] = useState('')
+  const [tgLoaded, setTgLoaded] = useState(false)
+
+  useEffect(() => {
+    fetchSettings().then(s => {
+      if (s.telegram_api_token) setTgToken(s.telegram_api_token)
+      if (s.telegram_api_base_url) setTgBaseUrl(s.telegram_api_base_url)
+      setTgLoaded(true)
+    }).catch(() => setTgLoaded(true))
+  }, [])
+
+  const handleSaveTg = async () => {
+    setTgStatus('testing')
+    setTgMessage('')
+    try {
+      await saveSetting('telegram_api_token', tgToken)
+      await saveSetting('telegram_api_base_url', tgBaseUrl)
+      const msg = await testTelegramConnection(tgToken, tgBaseUrl)
+      setTgStatus('ok')
+      setTgMessage(msg)
+    } catch (e: any) {
+      setTgStatus('error')
+      setTgMessage(e.message)
+    }
+  }
 
   const handleSave = () => {
     setSaved(true)
@@ -77,6 +107,38 @@ export default function Settings() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 24, marginBottom: 24 }}>
+        <h3 style={{ marginBottom: 16, fontSize: 16, fontWeight: 600, color: 'var(--accent-primary)' }}>Telegram Ads</h3>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={labelStyle}>API Токен</label>
+          <input style={inputStyle} type="password" value={tgToken}
+            onChange={e => setTgToken(e.target.value)} placeholder="Введите токен из ads.telegram.org" />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={labelStyle}>API URL</label>
+          <input style={inputStyle} type="text" value={tgBaseUrl}
+            onChange={e => setTgBaseUrl(e.target.value)} />
+        </div>
+
+        <button onClick={handleSaveTg} disabled={!tgLoaded || !tgToken} style={{
+          background: 'var(--accent-primary)', color: '#fff', border: 'none',
+          padding: '10px 24px', borderRadius: 'var(--radius-sm)', fontSize: 14,
+          fontWeight: 600, cursor: (!tgLoaded || !tgToken) ? 'default' : 'pointer',
+          opacity: (!tgLoaded || !tgToken) ? .5 : 1,
+        }}>
+          {tgStatus === 'testing' ? 'Проверка...' : 'Сохранить и проверить'}
+        </button>
+
+        {tgStatus === 'ok' && (
+          <div style={{ color: '#4caf50', fontSize: 13, marginTop: 8 }}>✅ {tgMessage}</div>
+        )}
+        {tgStatus === 'error' && (
+          <div style={{ color: '#ff6b6b', fontSize: 13, marginTop: 8 }}>❌ {tgMessage}</div>
+        )}
       </div>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 24, marginBottom: 24 }}>

@@ -3,6 +3,8 @@ import Overview from './pages/Overview'
 import Campaigns from './pages/Campaigns'
 import CampaignDetail from './pages/CampaignDetail'
 import Settings from './pages/Settings'
+import Login from './pages/Login'
+import { checkAuth } from './api/client'
 
 type Page = 'overview' | 'campaigns' | 'settings'
 
@@ -22,6 +24,8 @@ export const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext)
 
 export default function App() {
+  const [authed, setAuthed] = useState(false)
+  const [checking, setChecking] = useState(true)
   const [page, setPage] = useState<Page>('overview')
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
   const [themeColors, setThemeColors] = useState(() => {
@@ -30,6 +34,16 @@ export default function App() {
   })
 
   const [themePreset, setThemePreset] = useState(() => localStorage.getItem('theme-preset') || 'indigo-green')
+
+  useEffect(() => {
+    const token = localStorage.getItem('auth-token')
+    if (!token) { setChecking(false); return }
+    checkAuth().then(ok => {
+      setAuthed(ok)
+      if (!ok) localStorage.removeItem('auth-token')
+      setChecking(false)
+    })
+  }, [])
 
   useEffect(() => {
     if (themePreset === 'custom') document.documentElement.removeAttribute('data-theme')
@@ -46,6 +60,15 @@ export default function App() {
     document.documentElement.style.setProperty('--accent-primary', primary)
     document.documentElement.style.setProperty('--accent-secondary', secondary)
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth-token')
+    setAuthed(false)
+  }
+
+  if (checking) return null
+
+  if (!authed) return <Login onLogin={() => setAuthed(true)} />
 
   const navStyle: React.CSSProperties = {
     display: 'flex', gap: 16, padding: '16px 24px', background: 'var(--bg-card)',
@@ -77,6 +100,13 @@ export default function App() {
           </button>
           <button style={linkStyle(page === 'settings')} onClick={() => setPage('settings')}>
             Настройки
+          </button>
+          <span style={{ flex: 1 }} />
+          <button onClick={handleLogout} style={{
+            background: 'none', border: '1px solid var(--border)', color: 'var(--text-secondary)',
+            padding: '4px 12px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer',
+          }}>
+            Выйти
           </button>
         </nav>
         <main style={{ padding: 24 }} className="fade-in">
