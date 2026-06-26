@@ -1,0 +1,13 @@
+{
+  "buildCommand": "cd dashboard && npm run build",
+  "outputDirectory": "dashboard/dist",
+  "installCommand": "cd dashboard && npm install",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" }
+  ],
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 30
+    }
+  }
+}
