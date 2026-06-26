@@ -79,11 +79,22 @@ function headers(): Record<string, string> {
   return h
 }
 
-export async function login(password: string): Promise<string> {
+export async function register(email: string, password: string, name?: string): Promise<string> {
+  const res = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Ошибка регистрации')
+  return data.token
+}
+
+export async function login(email: string, password: string): Promise<string> {
   const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ email, password }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

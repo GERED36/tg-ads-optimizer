@@ -2,12 +2,12 @@ import { useState, createContext, useContext, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { checkAuth } from './api/client'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import DashboardLayout from './pages/dashboard/DashboardLayout'
 import Overview from './pages/dashboard/Overview'
 import Campaigns from './pages/dashboard/Campaigns'
 import CampaignDetail from './pages/dashboard/CampaignDetail'
 import Settings from './pages/dashboard/Settings'
-import Landing from './pages/landing/Landing'
 
 interface ThemeContextType {
   primary: string
@@ -51,13 +51,10 @@ export default function App() {
     <ThemeContext.Provider value={{ primary: themeColors.primary, secondary: themeColors.secondary, setTheme }}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={
-            authed ? <Navigate to="/dashboard" /> : <Login onLogin={() => setAuthed(true)} />
-          } />
-          <Route path="/dashboard" element={
-            authed ? <DashboardLayout /> : <Navigate to="/login" />
-          }>
+          <Route path="/" element={<Navigate to={authed ? '/dashboard' : '/login'} />} />
+          <Route path="/login" element={authed ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/register" element={authed ? <Navigate to="/dashboard" /> : <Register />} />
+          <Route path="/dashboard" element={authed ? <DashboardLayout /> : <Navigate to="/login" />}>
             <Route index element={<Overview />} />
             <Route path="campaigns" element={<Campaigns />} />
             <Route path="campaigns/:id" element={<CampaignDetail />} />

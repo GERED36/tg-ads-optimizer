@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
-import { login } from '../api/client'
+import { register as registerApi } from '../api/client'
 import GlowButton from '../components/GlowButton'
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -16,7 +17,7 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      const token = await login(email, password)
+      const token = await registerApi(email, password, name || undefined)
       localStorage.setItem('auth-token', token)
       navigate('/dashboard')
     } catch (err: any) {
@@ -32,7 +33,7 @@ export default function Login() {
       background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden',
     }}>
       <div style={{
-        position: 'absolute', top: '20%', left: '30%',
+        position: 'absolute', top: '20%', right: '30%',
         width: 400, height: 400, borderRadius: '50%',
         background: 'rgba(34,197,94,.06)', filter: 'blur(100px)',
       }} />
@@ -51,10 +52,30 @@ export default function Login() {
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Маркетинговый агент</h1>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Войдите в панель управления</p>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Создайте аккаунт</p>
         </div>
 
         <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>
+              Имя (необязательно)
+            </label>
+            <input
+              type="text" value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Ваше имя"
+              style={{
+                width: '100%', padding: '10px 14px', fontSize: 14,
+                background: 'var(--bg-primary)', border: '1px solid var(--glass-border)',
+                color: 'var(--text-primary)', borderRadius: 'var(--radius-sm)',
+                outline: 'none', boxSizing: 'border-box',
+                transition: 'border-color var(--transition)',
+              }}
+              onFocus={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,.2)'}
+              onBlur={e => e.currentTarget.style.borderColor = ''}
+            />
+          </div>
+
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>
               Email
@@ -83,7 +104,7 @@ export default function Login() {
             <input
               type="password" value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Введите пароль"
+              placeholder="Минимум 4 символа"
               style={{
                 width: '100%', padding: '10px 14px', fontSize: 14,
                 background: 'var(--bg-primary)', border: '1px solid var(--glass-border)',
@@ -107,14 +128,14 @@ export default function Login() {
           )}
 
           <GlowButton disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
-            {loading ? 'Вход...' : 'Войти'}
+            {loading ? 'Регистрация...' : 'Зарегистрироваться'}
           </GlowButton>
         </form>
 
         <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', marginTop: 20 }}>
-          Нет аккаунта?{' '}
-          <Link to="/register" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>
-            Зарегистрироваться
+          Уже есть аккаунт?{' '}
+          <Link to="/login" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>
+            Войти
           </Link>
         </p>
       </motion.div>

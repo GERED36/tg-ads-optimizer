@@ -70,6 +70,15 @@ model BudgetHistory {
   @@unique([campaignId, date])
 }
 
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("user")
+  createdAt    DateTime @default(now())
+}
+
 model AppSetting {
   key   String @id
   value String

@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import prisma from '../src/db'
-import { login, verify } from '../src/auth'
+import { login, register, verify } from '../src/auth'
 
 const app = express()
 app.use(cors({ origin: '*' }))
@@ -9,18 +9,40 @@ app.use(express.json())
 
 // --- Auth ---
 
-app.post('/api/auth/login', (req, res) => {
-  const { password } = req.body || {}
-  if (!password) {
-    res.status(400).json({ error: 'Введите пароль' })
-    return
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, name } = req.body || {}
+    if (!email || !password) {
+      res.status(400).json({ error: 'Введите email и пароль' })
+      return
+    }
+    if (password.length < 4) {
+      res.status(400).json({ error: 'Пароль должен быть минимум 4 символа' })
+      return
+    }
+    const token = await register(email, password, name)
+    res.json({ token })
+  } catch (e: any) {
+    res.status(400).json({ error: e.message })
   }
-  const token = login(password)
-  if (!token) {
-    res.status(401).json({ error: 'Неверный пароль' })
-    return
+})
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body || {}
+    if (!email || !password) {
+      res.status(400).json({ error: 'Введите email и пароль' })
+      return
+    }
+    const token = await login(email, password)
+    if (!token) {
+      res.status(401).json({ error: 'Неверный email или пароль' })
+      return
+    }
+    res.json({ token })
+  } catch (e: any) {
+    res.status(500).json({ error: 'Ошибка входа' })
   }
-  res.json({ token })
 })
 
 app.get('/api/auth/check', (req, res) => {
